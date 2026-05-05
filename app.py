@@ -1,3 +1,5 @@
+##ADD FRIEND API SRC BY @STAR_GMR
+#CHANNEL : @PVT_STAR
 from flask import Flask, request, jsonify
 import sys
 import jwt
@@ -16,11 +18,11 @@ import json
 import time
 import urllib3
 import warnings
+import base64
 
 # -----------------------------
 # Security Warnings Disable
 # -----------------------------
-# HTTPS warnings disable karo
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 warnings.filterwarnings("ignore", category=UserWarning, message="Unverified HTTPS request")
 
@@ -48,10 +50,12 @@ def get_base_url(server_name):
     server_name = server_name.upper()
     if server_name == "IND":
         return "https://client.ind.freefiremobile.com/"
+    elif server_name == "ME":
+        return "https://clientbp.ggpolarbear.com/"
     elif server_name in {"BR", "US", "SAC", "NA"}:
         return "https://client.us.freefiremobile.com/"
     else:
-        return "https://clientbp.ggpolarbear.com/"
+        return "https://clientbp.ggblueshark.com/"
 
 def get_server_from_token(token):
     """Extract server region from JWT token"""
@@ -63,7 +67,143 @@ def get_server_from_token(token):
         return "IND"
 
 # -----------------------------
-# Retry Decorator - 10 baar try karega
+# ACCESS TOKEN -> JWT (Major Login)
+# -----------------------------
+
+# Protobuf definitions for Major Login
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import descriptor_pool as _descriptor_pool
+from google.protobuf import symbol_database as _symbol_database
+from google.protobuf.internal import builder as _builder
+
+_sym_db = _symbol_database.Default()
+
+# MajorLoginReq protobuf
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13MajorLoginReq.proto\"\xfa\n\n\nMajorLogin\x12\x12\n\nevent_time\x18\x03 \x01(\t\x12\x11\n\tgame_name\x18\x04 \x01(\t\x12\x13\n\x0bplatform_id\x18\x05 \x01(\x05\x12\x16\n\x0e\x63lient_version\x18\x07 \x01(\t\x12\x17\n\x0fsystem_software\x18\x08 \x01(\t\x12\x17\n\x0fsystem_hardware\x18\t \x01(\t\x12\x18\n\x10telecom_operator\x18\n \x01(\t\x12\x14\n\x0cnetwork_type\x18\x0b \x01(\t\x12\x14\n\x0cscreen_width\x18\x0c \x01(\r\x12\x15\n\rscreen_height\x18\r \x01(\r\x12\x12\n\nscreen_dpi\x18\x0e \x01(\t\x12\x19\n\x11processor_details\x18\x0f \x01(\t\x12\x0e\n\x06memory\x18\x10 \x01(\r\x12\x14\n\x0cgpu_renderer\x18\x11 \x01(\t\x12\x13\n\x0bgpu_version\x18\x12 \x01(\t\x12\x18\n\x10unique_device_id\x18\x13 \x01(\t\x12\x11\n\tclient_ip\x18\x14 \x01(\t\x12\x10\n\x08language\x18\x15 \x01(\t\x12\x0f\n\x07open_id\x18\x16 \x01(\t\x12\x14\n\x0copen_id_type\x18\x17 \x01(\t\x12\x13\n\x0b\x64\x65vice_type\x18\x18 \x01(\t\x12\'\n\x10memory_available\x18\x19 \x01(\x0b\x32\r.GameSecurity\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x1d \x01(\t\x12\x17\n\x0fplatform_sdk_id\x18\x1e \x01(\x05\x12\x1a\n\x12network_operator_a\x18) \x01(\t\x12\x16\n\x0enetwork_type_a\x18* \x01(\t\x12\x1c\n\x14\x63lient_using_version\x18\x39 \x01(\t\x12\x1e\n\x16\x65xternal_storage_total\x18< \x01(\x05\x12\"\n\x1a\x65xternal_storage_available\x18= \x01(\x05\x12\x1e\n\x16internal_storage_total\x18> \x01(\x05\x12\"\n\x1ainternal_storage_available\x18? \x01(\x05\x12#\n\x1bgame_disk_storage_available\x18@ \x01(\x05\x12\x1f\n\x17game_disk_storage_total\x18\x41 \x01(\x05\x12%\n\x1d\x65xternal_sdcard_avail_storage\x18\x42 \x01(\x05\x12%\n\x1d\x65xternal_sdcard_total_storage\x18\x43 \x01(\x05\x12\x10\n\x08login_by\x18I \x01(\x05\x12\x14\n\x0clibrary_path\x18J \x01(\t\x12\x12\n\nreg_avatar\x18L \x01(\x05\x12\x15\n\rlibrary_token\x18M \x01(\t\x12\x14\n\x0c\x63hannel_type\x18N \x01(\x05\x12\x10\n\x08\x63pu_type\x18O \x01(\x05\x12\x18\n\x10\x63pu_architecture\x18Q \x01(\t\x12\x1b\n\x13\x63lient_version_code\x18S \x01(\t\x12\x14\n\x0cgraphics_api\x18V \x01(\t\x12\x1d\n\x15supported_astc_bitset\x18W \x01(\r\x12\x1a\n\x12login_open_id_type\x18X \x01(\x05\x12\x18\n\x10\x61nalytics_detail\x18Y \x01(\x0c\x12\x14\n\x0cloading_time\x18\\ \x01(\r\x12\x17\n\x0frelease_channel\x18] \x01(\t\x12\x12\n\nextra_info\x18^ \x01(\t\x12 \n\x18\x61ndroid_engine_init_flag\x18_ \x01(\r\x12\x0f\n\x07if_push\x18\x61 \x01(\x05\x12\x0e\n\x06is_vpn\x18\x62 \x01(\x05\x12\x1c\n\x14origin_platform_type\x18\x63 \x01(\t\x12\x1d\n\x15primary_platform_type\x18\x64 \x01(\t\"5\n\x0cGameSecurity\x12\x0f\n\x07version\x18\x06 \x01(\x05\x12\x14\n\x0chidden_value\x18\x08 \x01(\x04\x62\x06proto3')
+
+_globals = globals()
+_builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'MajorLoginReq_pb2', _globals)
+MajorLogin = _globals['MajorLogin']
+GameSecurity = _globals['GameSecurity']
+
+# MajorLoginRes protobuf
+DESCRIPTOR2 = _descriptor_pool.Default().AddSerializedFile(b'\n\x13MajorLoginRes.proto\"|\n\rMajorLoginRes\x12\x13\n\x0b\x61\x63\x63ount_uid\x18\x01 \x01(\x04\x12\x0e\n\x06region\x18\x02 \x01(\t\x12\r\n\x05token\x18\x08 \x01(\t\x12\x0b\n\x03url\x18\n \x01(\t\x12\x11\n\ttimestamp\x18\x15 \x01(\x03\x12\x0b\n\x03key\x18\x16 \x01(\x0c\x12\n\n\x02iv\x18\x17 \x01(\x0c\x62\x06proto3')
+
+_builder.BuildMessageAndEnumDescriptors(DESCRIPTOR2, _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR2, 'MajorLoginRes_pb2', _globals)
+MajorLoginRes = _globals['MajorLoginRes']
+
+def get_jwt_from_access_token(access_token):
+    """Convert access token to JWT using Major Login"""
+    try:
+        # Step 1: Get open_id from token inspect endpoint
+        inspect_url = f"https://100067.connect.garena.com/oauth/token/inspect?token={access_token}"
+        insp_resp = requests.get(inspect_url, timeout=10)
+        
+        if insp_resp.status_code != 200:
+            return None, "Failed to inspect token"
+        
+        insp_data = insp_resp.json()
+        open_id = insp_data.get('open_id')
+        
+        if not open_id:
+            return None, "open_id not found in token"
+        
+        # Step 2: Try different platform types
+        platform_types = [2, 3, 4, 6, 8]
+        
+        for pt in platform_types:
+            try:
+                major = MajorLogin()
+                major.event_time = "2025-03-23 12:00:00"
+                major.game_name = "free fire"
+                major.platform_id = 1
+                major.client_version = "1.123.1"
+                major.system_software = "Android OS 9 / API-28 (PQ3B.190801.10101846/G9650ZHU2ARC6)"
+                major.system_hardware = "Handheld"
+                major.telecom_operator = "Verizon"
+                major.network_type = "WIFI"
+                major.screen_width = 1920
+                major.screen_height = 1080
+                major.screen_dpi = "280"
+                major.processor_details = "ARM64 FP ASIMD AES VMH | 2865 | 4"
+                major.memory = 3003
+                major.gpu_renderer = "Adreno (TM) 640"
+                major.gpu_version = "OpenGL ES 3.1 v1.46"
+                major.unique_device_id = "Google|34a7dcdf-a7d5-4cb6-8d7e-3b0e448a0c57"
+                major.client_ip = "223.191.51.89"
+                major.language = "en"
+                major.open_id = open_id
+                major.open_id_type = "4"
+                major.device_type = "Handheld"
+                major.memory_available.version = 55
+                major.memory_available.hidden_value = 81
+                major.access_token = access_token
+                major.platform_sdk_id = 1
+                major.network_operator_a = "Verizon"
+                major.network_type_a = "WIFI"
+                major.client_using_version = "7428b253defc164018c604a1ebbfebdf"
+                major.external_storage_total = 36235
+                major.external_storage_available = 31335
+                major.internal_storage_total = 2519
+                major.internal_storage_available = 703
+                major.game_disk_storage_available = 25010
+                major.game_disk_storage_total = 26628
+                major.external_sdcard_avail_storage = 32992
+                major.external_sdcard_total_storage = 36235
+                major.login_by = 3
+                major.library_path = "/data/app/com.dts.freefireth-YPKM8jHEwAJlhpmhDhv5MQ==/lib/arm64"
+                major.reg_avatar = 1
+                major.library_token = "5b892aaabd688e571f688053118a162b|/data/app/com.dts.freefireth-YPKM8jHEwAJlhpmhDhv5MQ==/base.apk"
+                major.channel_type = 3
+                major.cpu_type = 2
+                major.cpu_architecture = "64"
+                major.client_version_code = "2019118695"
+                major.graphics_api = "OpenGLES2"
+                major.supported_astc_bitset = 16383
+                major.login_open_id_type = 4
+                major.analytics_detail = b"FwQVTgUPX1UaUllDDwcWCRBpWA0FUgsvA1snWlBaO1kFYg=="
+                major.loading_time = 13564
+                major.release_channel = "android"
+                major.extra_info = "KqsHTymw5/5GB23YGniUYN2/q47GATrq7eFeRatf0NkwLKEMQ0PK5BKEk72dPflAxUlEBir6Vtey83XqF593qsl8hwY="
+                major.android_engine_init_flag = 110009
+                major.if_push = 1
+                major.is_vpn = 1
+                major.origin_platform_type = str(pt)
+                major.primary_platform_type = str(pt)
+                
+                payload = major.SerializeToString()
+                encrypted_payload = encrypt_message(payload)
+                
+                url = "https://loginbp.ggblueshark.com/MajorLogin"
+                headers = {
+                    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 11; ASUS_Z01QD Build/PI)",
+                    "Connection": "Keep-Alive",
+                    "Accept-Encoding": "gzip",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Unity-Version": "2018.4.11f1",
+                    "X-GA": "v1 1",
+                    "ReleaseVersion": "OB53"
+                }
+                
+                resp = requests.post(url, data=encrypted_payload, headers=headers, verify=False, timeout=10)
+                
+                if resp.status_code == 200:
+                    major_res = MajorLoginRes()
+                    major_res.ParseFromString(resp.content)
+                    if major_res.token:
+                        return major_res.token, None
+            except Exception as e:
+                continue
+        
+        return None, "MajorLogin failed on all platforms"
+        
+    except Exception as e:
+        return None, str(e)
+
+# -----------------------------
+# Retry Decorator
 # -----------------------------
 def retry_operation(max_retries=10, delay=1):
     def decorator(func):
@@ -74,7 +214,6 @@ def retry_operation(max_retries=10, delay=1):
                     result = func(*args, **kwargs)
                     if result and result.get('status') in ['success', 'failed']:
                         return result
-                    # Agar result nahi aaya toh retry karo
                     print(f"Attempt {attempt + 1}/{max_retries} failed, retrying...")
                 except Exception as e:
                     last_exception = e
@@ -83,7 +222,6 @@ def retry_operation(max_retries=10, delay=1):
                 if attempt < max_retries - 1:
                     time.sleep(delay)
             
-            # Agar 10 baar mein bhi fail hua toh last error return karo
             if last_exception:
                 return {
                     "status": "error",
@@ -98,10 +236,10 @@ def retry_operation(max_retries=10, delay=1):
     return decorator
 
 # -----------------------------
-# JWT Token Generation Functions - FIXED
+# JWT Token Generation Functions
 # -----------------------------
 def get_token_from_uid_password(uid, password):
-    """Get JWT token using UID and password - FIXED VERSION"""
+    """Get JWT token using UID and password"""
     try:
         oauth_url = "https://100067.connect.garena.com/oauth/guest/token/grant"
         payload = {
@@ -130,7 +268,6 @@ def get_token_from_uid_password(uid, password):
         access_token = oauth_data['access_token']
         open_id = oauth_data.get('open_id', '')
         
-        # Try platforms with the obtained credentials
         platforms = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         
         for platform_type in platforms:
@@ -148,13 +285,13 @@ def get_token_from_uid_password(uid, password):
         return None, f"Unexpected error: {str(e)}"
 
 def try_platform_login(open_id, access_token, platform_type):
-    """Try login for a specific platform - IMPROVED VERSION"""
+    """Try login for a specific platform"""
     try:
         game_data = my_pb2.GameData()
         game_data.timestamp = "2024-12-05 18:15:32"
         game_data.game_name = "free fire"
         game_data.game_version = 1
-        game_data.version_code = "1.123.2"
+        game_data.version_code = "1.108.3"
         game_data.os_info = "Android OS 9 / API-28 (PI/rel.cjw.20220518.114133)"
         game_data.device_type = "Handheld"
         game_data.network_provider = "Verizon Wireless"
@@ -197,19 +334,11 @@ def try_platform_login(open_id, access_token, platform_type):
         response.raise_for_status()
 
         if response.status_code == 200:
-            # Parse response
-            data_dict = None
-            try:
-                example_msg = output_pb2.Garena_420()
-                example_msg.ParseFromString(response.content)
-                data_dict = {field.name: getattr(example_msg, field.name)
-                             for field in example_msg.DESCRIPTOR.fields
-                             if field.name not in ["binary", "binary_data", "Garena420"]}
-            except Exception as e:
-                try:
-                    data_dict = response.json()
-                except ValueError:
-                    return None
+            example_msg = output_pb2.Garena_420()
+            example_msg.ParseFromString(response.content)
+            data_dict = {field.name: getattr(example_msg, field.name)
+                         for field in example_msg.DESCRIPTOR.fields
+                         if field.name not in ["binary", "binary_data", "Garena420"]}
 
             if data_dict and "token" in data_dict:
                 token_value = data_dict["token"]
@@ -287,17 +416,30 @@ def extract_player_info(info_data):
         return None
 
     basic_info = info_data.basic_info
+    
+    friends_count = 0
+    try:
+        if hasattr(info_data, 'friends'):
+            friends_count = len(info_data.friends)
+        elif hasattr(info_data, 'friend_list'):
+            friends_count = len(info_data.friend_list)
+        elif hasattr(info_data, 'social_info') and hasattr(info_data.social_info, 'friend_count'):
+            friends_count = info_data.social_info.friend_count
+    except:
+        friends_count = 0
+    
     return {
         'uid': basic_info.account_id,
         'nickname': basic_info.nickname,
         'level': basic_info.level,
         'region': basic_info.region,
         'likes': basic_info.liked,
-        'release_version': basic_info.release_version
+        'release_version': basic_info.release_version,
+        'friends_count': friends_count
     }
 
 # -----------------------------
-# Authentication Helper Functions
+# Authentication Helper
 # -----------------------------
 def decode_author_uid(token):
     try:
@@ -307,8 +449,77 @@ def decode_author_uid(token):
         return None
 
 # -----------------------------
-# Friend Management Functions - WITH RETRY
+# Get Friends List Function
 # -----------------------------
+def get_friends_list(target_uid, token, server_name=None):
+    """Get friends list using GetPlayerSocialNetwork endpoint"""
+    try:
+        if not server_name:
+            server_name = get_server_from_token(token)
+            
+        msg = uid_generator_pb2.uid_generator()
+        msg.saturn_ = int(target_uid)
+        msg.garena = 1
+        
+        protobuf_data = msg.SerializeToString()
+        encrypted_data = encrypt_message_hex(protobuf_data)
+        
+        endpoint = get_base_url(server_name) + "GetPlayerSocialNetwork"
+
+        headers = {
+            'User-Agent': "Dalvik/2.1.0 (Linux; U; Android 9; ASUS_Z01QD Build/PI)",
+            'Connection': "Keep-Alive",
+            'Accept-Encoding': "gzip",
+            'Authorization': f"Bearer {token}",
+            'Content-Type': "application/x-www-form-urlencoded",
+            'Expect': "100-continue",
+            'X-Unity-Version': "2018.4.11f1",
+            'X-GA': "v1 1",
+            'ReleaseVersion': "OB53"
+        }
+
+        response = requests.post(endpoint, data=bytes.fromhex(encrypted_data), headers=headers, verify=False)
+        
+        if response.status_code != 200:
+            return [], 0
+
+        try:
+            if hasattr(data_pb2, 'SocialNetwork') or hasattr(data_pb2, 'PlayerSocialNetwork'):
+                social_info = data_pb2.SocialNetwork() if hasattr(data_pb2, 'SocialNetwork') else data_pb2.PlayerSocialNetwork()
+                hex_response = response.content.hex()
+                binary = bytes.fromhex(hex_response)
+                social_info.ParseFromString(binary)
+                
+                friends_list = []
+                friends_count = 0
+                
+                if hasattr(social_info, 'friends'):
+                    friends_count = len(social_info.friends)
+                    for friend in social_info.friends:
+                        name = getattr(friend, 'nickname', None) or getattr(friend, 'name', 'Unknown')
+                        friends_list.append(name)
+                elif hasattr(social_info, 'friend_list'):
+                    friends_count = len(social_info.friend_list)
+                    for friend in social_info.friend_list:
+                        name = getattr(friend, 'nickname', None) or getattr(friend, 'name', 'Unknown')
+                        friends_list.append(name)
+                
+                return friends_list, friends_count
+            else:
+                return [], 0
+                
+        except Exception as e:
+            print(f"Error parsing friends list: {e}")
+            return [], 0
+
+    except Exception as e:
+        print(f"Error getting friends list: {e}")
+        return [], 0
+
+# -----------------------------
+# Friend Management Functions
+# -----------------------------
+
 @retry_operation(max_retries=10, delay=1)
 def remove_friend_with_retry(author_uid, target_uid, token, server_name=None):
     """Remove friend with retry mechanism"""
@@ -316,8 +527,8 @@ def remove_friend_with_retry(author_uid, target_uid, token, server_name=None):
         if not server_name:
             server_name = get_server_from_token(token)
             
-        # Get player info
         player_info = get_player_info(target_uid, token, server_name)
+        friends_names, friends_count = get_friends_list(target_uid, token, server_name)
         
         msg = RemoveFriend_Req_pb2.RemoveFriend()
         msg.AuthorUid = int(author_uid)
@@ -336,29 +547,30 @@ def remove_friend_with_retry(author_uid, target_uid, token, server_name=None):
 
         res = requests.post(url, data=encrypted_bytes, headers=headers, verify=False)
         
-        # Extract player info
         player_data = None
         if player_info:
             player_data = extract_player_info(player_info)
         
-        # Check if successful
         if res.status_code == 200:
             status = "success"
         else:
             status = "failed"
-            # Force retry by raising exception
             raise Exception(f"HTTP {res.status_code}: {res.text}")
         
-        # Simplified response format
         response_data = {
-            "author_uid": author_uid,
+            "remover_uid": author_uid,
             "nickname": player_data.get('nickname') if player_data else "Unknown",
-            "uid": target_uid,
+            "removed_uid": target_uid,
             "level": player_data.get('level') if player_data else 0,
             "likes": player_data.get('likes') if player_data else 0,
+            "friends_count": friends_count if friends_count else player_data.get('friends_count', 0),
+            "friends_names": friends_names if friends_names else [],
             "region": player_data.get('region') if player_data else "Unknown",
             "release_version": player_data.get('release_version') if player_data else "Unknown",
             "status": status,
+            "jwt_token": token,
+            "owner_tg": "@STAR_GMR",
+            "channel_tg": "@STAR_METHODE",
             "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
@@ -366,7 +578,7 @@ def remove_friend_with_retry(author_uid, target_uid, token, server_name=None):
 
     except Exception as e:
         print(f"Remove friend error: {e}")
-        raise e  # Retry ke liye exception raise karo
+        raise e
 
 @retry_operation(max_retries=10, delay=1)
 def send_friend_request_with_retry(author_uid, target_uid, token, server_name=None):
@@ -375,8 +587,8 @@ def send_friend_request_with_retry(author_uid, target_uid, token, server_name=No
         if not server_name:
             server_name = get_server_from_token(token)
             
-        # Get player info
         player_info = get_player_info(target_uid, token, server_name)
+        friends_names, friends_count = get_friends_list(target_uid, token, server_name)
         
         encrypted_id = Encrypt_ID(target_uid)
         payload = f"08a7c4839f1e10{encrypted_id}1801"
@@ -394,29 +606,31 @@ def send_friend_request_with_retry(author_uid, target_uid, token, server_name=No
 
         r = requests.post(url, headers=headers, data=bytes.fromhex(encrypted_payload), verify=False)
         
-        # Extract player info
         player_data = None
         if player_info:
             player_data = extract_player_info(player_info)
         
-        # Check if successful
         if r.status_code == 200:
             status = "success"
         else:
             status = "failed"
-            # Force retry by raising exception
             raise Exception(f"HTTP {r.status_code}: {r.text}")
         
-        # Simplified response format
         response_data = {
-            "author_uid": author_uid,
+            "your_uid": author_uid,
+            "owner_uid": "8809806596",
             "nickname": player_data.get('nickname') if player_data else "Unknown",
-            "uid": target_uid,
+            "friend_uid": target_uid,
             "level": player_data.get('level') if player_data else 0,
             "likes": player_data.get('likes') if player_data else 0,
+            "friends_count": friends_count if friends_count else player_data.get('friends_count', 0),
+            "friends_names": friends_names if friends_names else [],
             "region": player_data.get('region') if player_data else "Unknown",
             "release_version": player_data.get('release_version') if player_data else "Unknown",
             "status": status,
+            "jwt_token": token,
+            "owner_tg": "@STAR_GMR",
+            "channel_tg": "@STAR_METHODE",
             "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
@@ -424,98 +638,112 @@ def send_friend_request_with_retry(author_uid, target_uid, token, server_name=No
         
     except Exception as e:
         print(f"Add friend error: {e}")
-        raise e  # Retry ke liye exception raise karo
+        raise e
+
+def get_token_common(uid=None, password=None, access_token=None):
+    """Common function to get token from either uid/password or access_token"""
+    token = None
+    error = None
+    
+    if access_token:
+        # Direct access token to JWT
+        token, error = get_jwt_from_access_token(access_token)
+        if error:
+            return None, error
+    elif uid and password:
+        # UID/Password to JWT
+        token, error = get_token_from_uid_password(uid, password)
+        if error:
+            return None, error
+    else:
+        return None, "Missing authentication (uid/password or access_token)"
+    
+    return token, None
 
 # -----------------------------
-# Customized API Routes
+# Routes - WITH ACCESS TOKEN SUPPORT
 # -----------------------------
 
-@app.route('/adding_friend', methods=['GET'])
+@app.route('/add', methods=['GET'])
 def adding_friend_custom():
-    """URL: /adding_friend?uid={uid}&password={password}&friend_uid={target_uid}"""
+    """URL: 
+       /add?uid=UID&password=PASS&friend_uid=TARGET
+       OR
+       /add?access_token=TOKEN&friend_uid=TARGET
+    """
     uid = request.args.get('uid')
     password = request.args.get('password')
+    access_token = request.args.get('access_token')
     friend_uid = request.args.get('friend_uid')
     server_name = request.args.get('server_name', 'IND')
 
-    if not uid or not password or not friend_uid:
-        return jsonify({"status": "failed", "message": "Missing uid, password, or friend_uid"}), 400
+    if not friend_uid:
+        return jsonify({"status": "failed", "message": "Missing friend_uid"}), 400
+    
+    if not access_token and (not uid or not password):
+        return jsonify({"status": "failed", "message": "Provide either (uid+password) or access_token"}), 400
 
-    token, error = get_token_from_uid_password(uid, password)
+    token, error = get_token_common(uid, password, access_token)
     if error:
         return jsonify({"status": "failed", "message": error}), 400
     
     author_uid = decode_author_uid(token)
+    if not author_uid:
+        return jsonify({"status": "failed", "message": "Invalid token"}), 400
+        
     result = send_friend_request_with_retry(author_uid, friend_uid, token, server_name)
     return jsonify(result)
 
-@app.route('/adding_friend_by_token', methods=['GET'])
-def adding_friend_by_token():
-    """URL: /adding_friend_by_token?jwt_token={jwt_token}&friend_uid={target_uid}&server_name={server_name}"""
-    jwt_token = request.args.get('jwt_token')
-    friend_uid = request.args.get('friend_uid')
-    server_name = request.args.get('server_name', 'IND')
-
-    if not jwt_token or not friend_uid:
-        return jsonify({"status": "failed", "message": "Missing jwt_token or friend_uid"}), 400
-
-    # Validate JWT token
-    author_uid = decode_author_uid(jwt_token)
-    if not author_uid:
-        return jsonify({"status": "failed", "message": "Invalid JWT token"}), 400
-    
-    result = send_friend_request_with_retry(author_uid, friend_uid, jwt_token, server_name)
-    return jsonify(result)
-
-@app.route('/remove_friend', methods=['GET'])
+@app.route('/remove', methods=['GET'])
 def removing_friend_custom():
-    """URL: /removing_friend?uid={uid}&password={password}&friend_uid={target_uid}"""
+    """URL: 
+       /remove?uid=UID&password=PASS&friend_uid=TARGET
+       OR
+       /remove?access_token=TOKEN&friend_uid=TARGET&server_name=ME,ETC
+    """
     uid = request.args.get('uid')
     password = request.args.get('password')
+    access_token = request.args.get('access_token')
     friend_uid = request.args.get('friend_uid')
     server_name = request.args.get('server_name', 'IND')
 
-    if not uid or not password or not friend_uid:
-        return jsonify({"status": "failed", "message": "Missing uid, password, or friend_uid"}), 400
+    if not friend_uid:
+        return jsonify({"status": "failed", "message": "Missing friend_uid"}), 400
+    
+    if not access_token and (not uid or not password):
+        return jsonify({"status": "failed", "message": "Provide either (uid+password) or access_token"}), 400
 
-    token, error = get_token_from_uid_password(uid, password)
+    token, error = get_token_common(uid, password, access_token)
     if error:
         return jsonify({"status": "failed", "message": error}), 400
     
     author_uid = decode_author_uid(token)
-    result = remove_friend_with_retry(author_uid, friend_uid, token, server_name)
-    return jsonify(result)
-
-@app.route('/remove_friend_by_token', methods=['GET'])
-def removing_friend_by_token():
-    """URL: /remove_friend_by_token?jwt_token={jwt_token}&friend_uid={target_uid}&server_name={server_name}"""
-    jwt_token = request.args.get('jwt_token')
-    friend_uid = request.args.get('friend_uid')
-    server_name = request.args.get('server_name', 'IND')
-
-    if not jwt_token or not friend_uid:
-        return jsonify({"status": "failed", "message": "Missing jwt_token or friend_uid"}), 400
-
-    # Validate JWT token
-    author_uid = decode_author_uid(jwt_token)
     if not author_uid:
-        return jsonify({"status": "failed", "message": "Invalid JWT token"}), 400
-    
-    result = remove_friend_with_retry(author_uid, friend_uid, jwt_token, server_name)
+        return jsonify({"status": "failed", "message": "Invalid token"}), 400
+        
+    result = remove_friend_with_retry(author_uid, friend_uid, token, server_name)
     return jsonify(result)
 
 @app.route('/player_info', methods=['GET'])
 def player_info_custom():
-    """URL: /player_info?uid={uid}&password={password}&friend_uid={target_uid}"""
+    """URL: 
+       /player_info?uid=UID&password=PASS&friend_uid=TARGET
+       OR
+       /player_info?access_token=TOKEN&friend_uid=TARGET
+    """
     uid = request.args.get('uid')
     password = request.args.get('password')
+    access_token = request.args.get('access_token')
     friend_uid = request.args.get('friend_uid')
     server_name = request.args.get('server_name', 'IND')
 
-    if not uid or not password or not friend_uid:
-        return jsonify({"status": "failed", "message": "Missing uid, password, or friend_uid"}), 400
+    if not friend_uid:
+        return jsonify({"status": "failed", "message": "Missing friend_uid"}), 400
+    
+    if not access_token and (not uid or not password):
+        return jsonify({"status": "failed", "message": "Provide either (uid+password) or access_token"}), 400
 
-    token, error = get_token_from_uid_password(uid, password)
+    token, error = get_token_common(uid, password, access_token)
     if error:
         return jsonify({"status": "failed", "message": error}), 400
 
@@ -527,56 +755,45 @@ def player_info_custom():
     player_data.update({"status": "success", "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
     return jsonify(player_data)
 
-@app.route('/player_info_by_token', methods=['GET'])
-def player_info_by_token():
-    """URL: /player_info_by_token?jwt_token={jwt_token}&friend_uid={target_uid}&server_name={server_name}"""
-    jwt_token = request.args.get('jwt_token')
-    friend_uid = request.args.get('friend_uid')
-    server_name = request.args.get('server_name', 'IND')
-
-    if not jwt_token or not friend_uid:
-        return jsonify({"status": "failed", "message": "Missing jwt_token or friend_uid"}), 400
-
-    # Validate JWT token
-    author_uid = decode_author_uid(jwt_token)
-    if not author_uid:
-        return jsonify({"status": "failed", "message": "Invalid JWT token"}), 400
-
-    player_info = get_player_info(friend_uid, jwt_token, server_name)
-    if not player_info:
-        return jsonify({"status": "failed", "message": "Info not found"}), 400
-
-    player_data = extract_player_info(player_info)
-    player_data.update({"status": "success", "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
-    return jsonify(player_data)
-
-# -----------------------------
-# JWT Generation Routes (Optional)
-# -----------------------------
 @app.route('/token', methods=['GET'])
 def oauth_guest():
-    """Get token using UID and password - FIXED"""
+    """Get token using UID and password OR access_token"""
     uid = request.args.get('uid')
     password = request.args.get('password')
+    access_token = request.args.get('access_token')
     
-    if not uid or not password:
-        return jsonify({"message": "Missing uid or password"}), 400
-
-    token, error = get_token_from_uid_password(uid, password)
-    if error:
-        return jsonify({"message": error}), 400
+    if access_token:
+        token, error = get_jwt_from_access_token(access_token)
+        if error:
+            return jsonify({"message": error}), 400
         
-    # Verify the token is valid
-    author_uid = decode_author_uid(token)
-    if not author_uid:
-        return jsonify({"message": "Generated token is invalid"}), 400
-        
-    return jsonify({
-        "status": "success",
-        "token": token,
-        "uid": uid,
-        "author_uid": author_uid
-    })
+        author_uid = decode_author_uid(token)
+        return jsonify({
+            "status": "success",
+            "token": token,
+            "author_uid": author_uid,
+            "method": "access_token"
+        })
+    
+    elif uid and password:
+        token, error = get_token_from_uid_password(uid, password)
+        if error:
+            return jsonify({"message": error}), 400
+            
+        author_uid = decode_author_uid(token)
+        if not author_uid:
+            return jsonify({"message": "Generated token is invalid"}), 400
+            
+        return jsonify({
+            "status": "success",
+            "token": token,
+            "uid": uid,
+            "author_uid": author_uid,
+            "method": "uid_password"
+        })
+    
+    else:
+        return jsonify({"message": "Provide either (uid+password) or access_token"}), 400
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -584,9 +801,9 @@ def health_check():
 
 # -----------------------------
 # Run Server
-# ----------------------------
+# -----------------------------
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-    
-#STAR GMR
+#ADD FRIEND API SRC BY @STAR_GMR
+#CHANNEL : @PVT_STAR
