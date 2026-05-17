@@ -55,7 +55,7 @@ def get_base_url(server_name):
     elif server_name in {"BR", "US", "SAC", "NA"}:
         return "https://client.us.freefiremobile.com/"
     else:
-        return "https://clientbp.ggblueshark.com/"
+        return "https://clientbp.ggpolarbear.com/"
 
 def get_server_from_token(token):
     """Extract server region from JWT token"""
